@@ -1,0 +1,36 @@
+<div class="container-fluid">
+  <div class="panel panel-default">
+	<div class="panel-heading">
+	  <b>Discovered Hosts</b>
+	  <div class="pull-right">
+		<%= link_to('', compact_hosts_path(), {class: ['glyphicon', 'glyphicon-th-list'], title: 'Compact listing'})%>
+	  </div>
+	</div>
+	<div class="panel-body">
+	  <table class="table table-striped">
+		<tr>
+		  <th>IP
+		  <th>MAC
+		  <th>Vendor
+		  <th>OS
+		  <th>Name
+		  <th>Last Seen
+		  <th colspan=2>
+		</tr>
+		<% @hosts.each do |h| %>
+		<tr>
+		  <td><%= h.ip %>
+		  <td><%= h.mac %>
+		  <td><%= h.vendor %>
+		  <td><%= h.os %>
+		  <td><%= h.name %>
+		  <td><%= h.updated_at %>
+		  <td><%= link_to('', h, {class: ['glyphicon', 'glyphicon-eye-open'], title: 'Show'}) %>
+		  <td><%= link_to('', edit_host_path(h), {class: ['glyphicon', 'glyphicon-edit'], title: 'Edit'})%></td>
+		</tr>
+		<% end %>
+	  </table>
+	  <%= @hosts.length %> assets
+	</div>
+  </div>
+</div>

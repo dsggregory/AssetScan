@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  host_id: 
+  port: 
+  proto: MyString
+  name: MyString
+  description: MyText
+
+two:
+  host_id: 
+  port: 
+  proto: MyString
+  name: MyString
+  description: MyText

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Netscan</title>
+  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+  <%= csrf_meta_tags %>
+</head>
+<body>
+
+  <style>
+    #container {
+      display: table;
+      width: 100%;
+      margin: 5px auto 5px auto;
+      height: 20px;
+      background-color: #eeeeee;
+    }
+	#searchbox {
+	  margin: 0px auto;
+	  float: right;
+	}
+    #row {
+      display: table-row;
+	  margin: 0px auto;
+	  background: white;
+	  /*background-image: url("/assets/banner.jpeg");*/
+    }    
+    #col_1, #col_2, #col_3 {
+      display: table-cell;
+      vertical-align: middle;
+	  margin: 0px auto;
+    }
+    #col_1 {
+      width: 200px;
+	  height: 75%;
+    }
+    #col_2 {
+      text-align: center;
+    }    
+    #col_3 {
+      width: 300px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- The header box on all pages. Includes the search box -->
+<div class="container-fluid">
+  <div id="container" class="header">
+	<div id="row">
+	
+	  <div id="col_1">
+		<%= image_tag("banner.jpeg") %>
+	  </div>
+  
+	  <div id="col_2">
+		<h1 style="margin:0; text-shadow: -2px 0 2px grey, 0 2px 2px grey, 2px 0 4px grey, 0 -2px 2px grey">
+		  Asset Info</h1>
+	  </div>
+  
+	  <div id="col_3">
+		<div style="display:table; margin: 0px auto;">
+		  <div id="row">
+			<%= link_to 'Home', dashboard_path %> | 
+			<%= link_to 'Assets', hosts_path %> | 
+			<%= link_to 'Issues', issues_path %>
+		  </div>
+		</div>
+	  </div>
+	</div>
+  </div>
+</div>
+
+<%= yield %>
+
+</body>
+</html>

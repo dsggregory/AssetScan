@@ -1,0 +1,77 @@
+<div class="container-fluid">
+  <div class="panel panel-default">
+	<div class="panel-heading">
+        <b>Host Info</b>
+        <%= link_to('', edit_host_path, {
+        :class => 'glyphicon glyphicon-edit pull-right',
+        :title => 'Edit'
+        }) %>
+    </div>
+	<div class="panel-body">
+
+    <table class="table-condensed">
+      <tr>
+        <td align="right"><b>IP</b>
+        <td><%= @host.ip %>
+      </tr>
+      <tr>
+        <td align="right"><b>MAC</b>
+        <td><%= @host.mac %>
+      </tr>
+      <tr>
+        <td align="right"><b>Vendor</b>
+        <td><%= @host.vendor %>
+      </tr>
+      <tr>
+        <td align="right"><b>OS</b>
+        <td><%= @host.os %>
+      </tr>
+      <tr>
+        <td align="right"><b>OS CPE</b>
+        <td><%= @host.os_cpe %>
+      </tr>
+      <tr>
+        <td align="right"><b>Name</b>
+        <td><%= @host.name %>
+      </tr>
+      <tr>
+        <td align="right"><b>Last Seen</b>
+        <td><%= @host.updated_at %>
+      </tr>
+      <tr>
+        <td align="right"><b>Description</b>
+        <td><%= @host.description %>
+      </tr>
+    </table>
+    </div>
+  </div>
+    
+  <div class="panel panel-default">
+	<div class="panel-heading"><b>Open Ports</b></div>
+	<div class="panel-body">
+	<table class="table-condensed">
+	  <tr>
+		<th>Port
+		<th>Proto
+		<th>Name
+		<th>Product
+		<th>Version
+		<th>CPE
+		<th>Last Seen
+	  </tr>
+	  <% @host.ports.each do |p| %>
+	  <tr>
+		<td><%= p.port %>
+		<td><%= p.proto %>
+		<td><%= p.name %>
+		<td><%= p.product %>
+		<td><%= p.version %>
+		<td><%= p.cpe %>
+		<td><%= p.updated_at %>
+	  </tr>
+	  <% end %>
+	</table>
+
+    </div>
+  </div>
+</div>

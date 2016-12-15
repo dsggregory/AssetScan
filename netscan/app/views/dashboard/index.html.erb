@@ -1,0 +1,82 @@
+<style>
+  .well {
+	background-color: #025DB2;
+	color: white;
+  }
+  .huge {
+	font-size: 3em;
+	line-height: 1;
+  }
+  .text-xs-right {
+	text-align: right !important;
+  }
+</style>
+
+<div class="container-fluid">
+  <div class="panel panel-default">
+	<div class="panel-heading"><b>Asset Dashboard</b></div>
+	<div class="panel-body">
+	  <div class="row">
+		<div class="col-sm-6">
+		  <div class="well">
+			<div class="row">
+			  <div class="col-xs-3">
+				<div class="glyphicon glyphicon-time huge"></div>
+			  </div>
+			  <div class="col-xs-9 text-xs-right">
+				<div class="huge">
+				  <%=
+				  ((Date.today - @last_scan_time.to_date)).to_i
+				  %>
+				</div>
+				<div>
+				  Last Scan Days
+				</div>
+			  </div>
+			</div>
+		  </div>
+		</div>
+		<div class="col-sm-6">
+		  <div class="well">
+			<div class="row">
+			  <div class="col-xs-3">
+				<div class="glyphicon glyphicon-tower huge"></div>
+			  </div>
+			  <div class="col-xs-9 text-xs-right">
+				<div class="huge">
+				  <%= @num_assets %>
+				</div>
+				<div>
+				  Total Assets
+				</div>
+			  </div>
+			</div>
+		  </div>
+		</div>
+	  </div>
+	  <div class="row">
+		<div class="cols-sm-12">
+		  <div class="well">
+			<div class="row">
+			  <div class="col-xs-3">
+				<div class="glyphicon glyphicon-tags huge"></div>
+			  </div>
+			  <div class="col-xs-9 text-xs-right">
+				<div class="huge">
+				  <%= @new_issues.length %>
+				</div>
+				<div>
+				  New Issues
+				</div>
+				<hr>
+				<% @new_issues.each do |issue| %>
+				  <li><%= issue.description %> for <%= issue.host.ip %>
+				<% end %>
+			  </div>
+			</div>
+		  </div>
+		</div>
+	  </div>
+	</div>
+  </div>
+</div>

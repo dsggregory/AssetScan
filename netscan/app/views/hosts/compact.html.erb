@@ -1,0 +1,27 @@
+<div class="container-fluid">
+  <div class="panel panel-default">
+	<div class="panel-heading">
+	  <b>Discovered Hosts (compact)</b>
+	  <div class="pull-right">
+		<%= link_to('', hosts_path(), {class: ['glyphicon', 'glyphicon-th-list'], title: 'Wide listing'})%>
+	  </div>
+	</div>
+	<div class="panel-body">
+	  <table class="table table-striped">
+		<tr>
+		  <th>MAC
+		  <th>Name
+		  <th>Description
+		</tr>
+		<% @hosts.each do |h| %>
+		<tr>
+		  <td><%= h.mac %>
+		  <td><%= h.name %>
+		  <td><%= h.description %>
+		</tr>
+		<% end %>
+	  </table>
+	  <%= @hosts.length %> assets
+	</div>
+  </div>
+</div>
