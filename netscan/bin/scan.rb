@@ -183,7 +183,38 @@ class ScanParse
   end
 end
 
-if(ARGV[0] && ARGV[0][0]!='-')
+def usage
+  STDERR.puts <<EOF
+  
+Usage: sudo rails runner bin/scan.rb [-f nmap_xml | -r ip_range] [-quick]
+
+    -f - specify an existing nmap XML file to parse
+    -r - specify an alternate IP range to pass to nmap
+    -quick - run a quick discovery scan vs. the default exhaustive scan
+
+EOF
+  exit(1)
+end
+
+opts = {xml_file: nil, quick: false, range: nil}
+i=0
+while(i<ARGV.length)
+  if(ARGV[i] == '-f')
+	i+=1
+	opts[:xml_file] = ARGV[i]
+  elsif(ARGV[i] == '-quick')
+	opts[:quick] = true
+  elsif(ARGV[i] == '-r')
+	i+=1
+	opts[:range] = ARGV[i]
+  else
+	usage
+  end
+  
+  i+=1
+end
+
+if(opts[:xml_file])
   parser = ScanParse.new(ARGV[0])
 else
   if(Process.euid != 0)
@@ -191,7 +222,7 @@ else
 	exit(1)
   end
 
-  if(ARGV[0] == '-quick')
+  if(opts[:quick])
 	# a quick check to just get IPs and MACs
 	nm_name = 'quick'
 	nm_opts = '-sP'
@@ -199,8 +230,8 @@ else
 	nm_name = 'full'
 	nm_opts = '-A -v -v'
   end
-  if(ARGV[1])
-	nm_dest = ARGV[1]
+  if(opts[:range])
+	nm_dest = opts[:range]
 	nm_name = 'single'
   else
 	nm_dest = '192.168.1.0/24'
