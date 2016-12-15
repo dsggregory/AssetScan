@@ -1,5 +1,11 @@
 #!/usr/bin/env ruby
 # sudo rails runner bin/scan.rb
+#
+# Some popular nmap commands
+# sudo nmap -sP -v 192.168.1.0/24
+#    Quick discover of hosts and mac addrs - no probing
+# sudo nmap -A -v -v 192.168.1.0/24
+#    Exhaustive discover scan with deep probing
 
 require 'rubygems'
 require 'xmlsimple'
@@ -85,6 +91,7 @@ class ScanParse
 		new_issue('new', 'new asset')
 	  else
 		oldh = oldh[0]
+		host = oldh
 	  end
 	  
 	  host.vendor = assign(oldh.vendor, avendor, :vendor, !oldh.new_record?)
@@ -117,6 +124,7 @@ class ScanParse
 			port.port = p['portid']
 			port.proto = p['protocol']
 			
+			# Check for updates
 			oldp = Port.where(host_id: port.host_id, port: port.port, proto: port.proto)
 			if(!oldp || oldp.length==0)
 			  oldp = Port.new
@@ -125,6 +133,7 @@ class ScanParse
 			  end
 			else
 			  oldp = oldp[0]
+			  port = oldp
 			end
 			
 			port.proto = assign(oldp.proto, port.proto, :proto, !oldp.new_record?)
@@ -164,11 +173,9 @@ else
 	exit(1)
   end
 
-  require 'tempfile'
-
-  tmpf = Tempfile.new('nmap')
-  system("nmap -A -v -v -oX #{tmpf.path} 192.168.1.0/24 >/dev/null 2>&1")
-  parser = ScanParse.new(tmpf.path)
-  tmpf.close
-  tmpf.unlink
+  # We reuse the nmap output file and leave it around for troubleshooting
+  outf = Rails.root.join('log/nmap-out.xml')
+  system("nmap -A -v -v -oX #{outf.to_s} 192.168.1.0/24")
+  
+  parser = ScanParse.new(outf.to_s)
 end

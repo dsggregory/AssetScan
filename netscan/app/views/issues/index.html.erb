@@ -2,26 +2,30 @@
   <div class="panel panel-default">
 	<div class="panel-heading"><b>New Discoveries</b></div>
 	<div class="panel-body">
-	  <%= form_for(:issues, url: issues_accept_path) do |f| %>
-	  <table class="table table-striped">
-		<tr>
-		  <th>Asset
-		  <th>Issue
-		  <th>(accept)
-		</tr>
-		<% @issues.each do |issue| %>
-		<tr>
-		  <td><%= link_to(issue.host.ip, host_path(issue.host)) %>
-		  <td><%= issue.description %>
-		  <td><%= check_box_tag("accepts[#{issue.id.to_s}]", '1', false) %>
-		</tr>
-	    <% end %>
-		<tr>
-		  <td>
-		  <td>
-		  <td><%= f.submit 'Accept Issues', {title: 'Indicate that you have evaluated the marked issues'} %>
-		</tr>
-	  </table>
+	  <% if (@issues.length > 0) %>
+		<%= form_for(:issues, url: issues_accept_path) do |f| %>
+		<table class="table table-striped">
+		  <tr>
+			<th>Asset
+			<th>Issue
+			<th>(accept)
+		  </tr>
+		  <% @issues.each do |issue| %>
+		  <tr>
+			<td><%= link_to(issue.host.ip, host_path(issue.host)) %>
+			<td><%= issue.description %>
+			<td><%= check_box_tag("accepts[#{issue.id.to_s}]", '1', false) %>
+		  </tr>
+		  <% end %>
+		  <tr>
+			<td>
+			<td>
+			<td><%= f.submit 'Accept Issues', {title: 'Indicate that you have evaluated the marked issues'} %>
+		  </tr>
+		</table>
+		<% end %>
+	  <% else %>
+		It's all good. No new issues.
 	  <% end %>
 	</div>
   </div>
