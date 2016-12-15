@@ -34,7 +34,7 @@ class ScanParse
 	if(!new.blank?)
 	  if(old.blank?)
 		if(add_issue)
-		  new_issue('change', '#{sym} changed')
+		  new_issue('change', "#{sym.to_s} changed")
 		end
 		new
 	  else
@@ -108,6 +108,26 @@ class ScanParse
 		end
 	  end
 	  
+	  # Server name from a probe script
+	  hscr = h['hostscript']
+	  if(hscr)
+		hscr.each do |hscript|
+		  hscript.each do |scra|
+			if(scra[0] == 'script')
+			  scra[1].each do |script|
+				if(script['id'] == 'nbstat' && script['elem'])
+				  script['elem'].each do |e| 
+					if(e['key'] == 'server_name')
+					  host.name = assign(oldh.name, e['content'], :name, !oldh.new_record?)
+					end
+				  end
+				end
+			  end
+			end
+		  end
+		end
+	  end
+	  
 	  # Save
 	  begin
 		host.save
@@ -128,9 +148,7 @@ class ScanParse
 			oldp = Port.where(host_id: port.host_id, port: port.port, proto: port.proto)
 			if(!oldp || oldp.length==0)
 			  oldp = Port.new
-			  if(!oldp.new_record?)
-				new_issue('new', 'new port on asset')
-			  end
+			  new_issue('new', 'new port on asset')
 			else
 			  oldp = oldp[0]
 			  port = oldp

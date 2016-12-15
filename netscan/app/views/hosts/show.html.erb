@@ -58,6 +58,7 @@
 		<th>Version
 		<th>CPE
 		<th>Last Seen
+        <th>
 	  </tr>
 	  <% @host.ports.each do |p| %>
 	  <tr>
@@ -68,6 +69,8 @@
 		<td><%= p.version %>
 		<td><%= p.cpe %>
 		<td><%= p.updated_at %>
+		<td><%= link_to('', p, {method: :delete, class: ['glyphicon', 'glyphicon-remove'], title: 'Delete port when you know it is no longer in service'}) %>
+
 	  </tr>
 	  <% end %>
 	</table>

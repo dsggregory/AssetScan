@@ -5,6 +5,8 @@ Rails.application.routes.draw do
   get '/issues' => 'issues#index'
   post '/issues-accept' => 'issues#accept'
   
+  delete '/ports/:id' => 'ports#destroy', :as => 'port'
+  
   get '/dashboard' => 'dashboard#index'
   
   root 'dashboard#index'

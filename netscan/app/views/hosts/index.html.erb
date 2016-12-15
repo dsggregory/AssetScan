@@ -25,7 +25,7 @@
 		  <td><%= h.os %>
 		  <td><%= h.name %>
 		  <td><%= h.updated_at %>
-		  <td><%= link_to('', h, {class: ['glyphicon', 'glyphicon-eye-open'], title: 'Show'}) %>
+		  <td><%= link_to('', h, {class: ['glyphicon', 'glyphicon-eye-open'], title: 'Show Asset - ' + h.description.to_s}) %>
 		  <td><%= link_to('', edit_host_path(h), {class: ['glyphicon', 'glyphicon-edit'], title: 'Edit'})%></td>
 		</tr>
 		<% end %>
