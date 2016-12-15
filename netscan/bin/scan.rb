@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-# sudo rails runner bin/scan.rb
+# sudo rails runner bin/scan.rb [nmap-xml-file | -quick]
 #
 # Some popular nmap commands
 # sudo nmap -sP -v 192.168.1.0/24
@@ -95,7 +95,7 @@ class ScanParse
 	  end
 	  
 	  host.vendor = assign(oldh.vendor, avendor, :vendor, !oldh.new_record?)
-	  host.ip = assign(oldh.ip, aip, :ip, !oldh.new_record?)
+	  host.ip = aip if(!aip.blank?)	# assign regardless but don't track as a change
 	  
 	  # OSes
 	  hos = h['os']
@@ -183,7 +183,7 @@ class ScanParse
   end
 end
 
-if(ARGV[0])
+if(ARGV[0] && ARGV[0][0]!='-')
   parser = ScanParse.new(ARGV[0])
 else
   if(Process.euid != 0)
@@ -191,9 +191,23 @@ else
 	exit(1)
   end
 
+  if(ARGV[0] == '-quick')
+	# a quick check to just get IPs and MACs
+	nm_name = 'quick'
+	nm_opts = '-sP'
+  else
+	nm_name = 'full'
+	nm_opts = '-A -v -v'
+  end
+  if(ARGV[1])
+	nm_dest = ARGV[1]
+	nm_name = 'single'
+  else
+	nm_dest = '192.168.1.0/24'
+  end
   # We reuse the nmap output file and leave it around for troubleshooting
-  outf = Rails.root.join('log/nmap-out.xml')
-  system("nmap -A -v -v -oX #{outf.to_s} 192.168.1.0/24")
+  outf = Rails.root.join("log/nmap-#{nm_name}.xml")
+  system("nmap #{nm_opts} -oX #{outf.to_s} #{nm_dest}")
   
   parser = ScanParse.new(outf.to_s)
 end

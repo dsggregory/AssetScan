@@ -1,3 +1,17 @@
+<script>
+  // for bootstrap tooltips
+  $(document).ready(function(){
+	$('[data-toggle="tooltip"]').tooltip();
+  });
+</script>
+
+<style>
+.htmltooltip + .tooltip > .tooltip-inner {
+  white-space: normal;
+  text-align: left;
+}
+</style>
+
 <div class="container-fluid">
   <div class="panel panel-default">
 	<div class="panel-heading">
@@ -25,7 +39,19 @@
 		  <td><%= h.os %>
 		  <td><%= h.name %>
 		  <td><%= h.updated_at %>
-		  <td><%= link_to('', h, {class: ['glyphicon', 'glyphicon-eye-open'], title: 'Show Asset - ' + h.description.to_s}) %>
+		  <%
+			tt = '- Show asset -'
+			tt += "<p><b>Open Ports:</b> #{h.ports.length}"
+			if(!h.description.blank?)
+			  tt += '<p><b>Description:</b></br>' + h.description.to_s
+			end
+		  %>
+		  <td><%= link_to('', h, {class: ['glyphicon', 'glyphicon-eye-open', 'htmltooltip'],
+						  title: tt,
+						  'data-placement'=> 'left',
+						  'data-toggle'=> 'tooltip',
+						  'data-html'=> true
+		  }) %>
 		  <td><%= link_to('', edit_host_path(h), {class: ['glyphicon', 'glyphicon-edit'], title: 'Edit'})%></td>
 		</tr>
 		<% end %>
