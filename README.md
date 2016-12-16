@@ -2,6 +2,11 @@
 
 Watch your local network for asset changes.
 
+**Screenshots**:
+
+* [Dashboard](doc/Dashboard.png)
+* [AssetInfo](doc/AssetInfo.png)
+
 This usees nmap to scan **local network only** for Assets and a Rails app to manage changes.
 
 Because this app defines an Asset's MAC as the primary key, you cannot use this
