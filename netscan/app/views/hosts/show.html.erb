@@ -2,10 +2,22 @@
   <div class="panel panel-default">
 	<div class="panel-heading">
         <b>Host Info</b>
-        <%= link_to('', edit_host_path, {
-        :class => 'glyphicon glyphicon-edit pull-right',
-        :title => 'Edit'
-        }) %>
+        <div class="pull-right">
+            <%=
+                link_to('', edit_host_path, {
+                    :class => 'glyphicon glyphicon-edit',
+                    :title => 'Edit'
+                })
+            %>
+            &nbsp;
+            <%=
+                link_to('', delete_host_path, {
+                    :method => :delete,
+                    :class => 'glyphicon glyphicon-remove',
+                    :title => 'Delete'
+                })
+            %>
+        </div>
     </div>
 	<div class="panel-body">
 
@@ -33,6 +45,10 @@
       <tr>
         <td align="right"><b>Name</b>
         <td><%= @host.name %>
+      </tr>
+      <tr>
+        <td align="right"><b>First Seen</b>
+        <td><%= @host.created_at %>
       </tr>
       <tr>
         <td align="right"><b>Last Seen</b>
@@ -69,7 +85,7 @@
 		<td><%= p.version %>
 		<td><%= p.cpe %>
 		<td><%= p.updated_at %>
-		<td><%= link_to('', p, {method: :delete, class: ['glyphicon', 'glyphicon-remove'], title: 'Delete port when you know it is no longer in service'}) %>
+		<td><%= link_to('', delete_port_path(:id=>p.id), {method: :delete, class: ['glyphicon', 'glyphicon-remove'], title: 'Delete port when you know it is no longer in service'}) %>
 
 	  </tr>
 	  <% end %>
@@ -77,4 +93,37 @@
 
     </div>
   </div>
+    
+  <div class="panel panel-default">
+	<div class="panel-heading"><b>Recent Issues</b></div>
+	<div class="panel-body">
+	  <% if (@host.issues.length > 0) %>
+		<%= form_for(:issues, url: issues_accept_path) do |f| %>
+		<table class="table table-striped">
+		  <tr>
+			<th>Issue
+			<th>(accept)
+		  </tr>
+		  <% @host.issues.each do |issue| %>
+		  <tr>
+			<td><%= issue.description %>
+			<td><% if(!issue.accepted) %> 
+                    <%= check_box_tag("accepts[#{issue.id.to_s}]", '1', false) %>
+                <% else %>
+                    Accepted
+                <% end %>
+		  </tr>
+		  <% end %>
+		  <tr>
+			<td>
+			<td><%= f.submit 'Accept Issues', {title: 'Indicate that you have evaluated the marked issues'} %>
+		  </tr>
+		</table>
+		<% end %>
+	  <% else %>
+		No recent issues.
+	  <% end %>
+	</div>
+  </div>
+
 </div>

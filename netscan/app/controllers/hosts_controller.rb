@@ -14,7 +14,7 @@ class HostsController < ApplicationController
 
   # GET /hosts
   def index
-	@hosts = Host.all.order(:mac)
+	@hosts = Host.all.order(created_at: :desc)
   end
 
   # GET /compact-hosts
@@ -38,6 +38,13 @@ class HostsController < ApplicationController
 	else
 	  render 'edit'
 	end
+  end
+  
+  def destroy
+	@host = Host.find(params[:id])
+	@host.destroy
+	
+	redirect_to hosts_path
   end
   
   private

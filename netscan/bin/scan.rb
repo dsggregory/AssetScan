@@ -45,6 +45,53 @@ class ScanParse
 	end
   end
   
+  # Since iOS8, Apple has started randomizing mac addrs to avoid tracking.
+  # They seem to only randomize the first 3 bytes (first 6 hex chars) of the
+  # mac and leave the final 3 bytes as the original.
+  #
+  # 8C:29:37:22:8F:D7
+  # ^^ ^^ ^^ = changed
+  #
+  # This attempts to find a host record whose last 3bytes of the mac-addr
+  # exist and that it's an ios host (via cpe).
+  #
+  def existing_ios_mac(mac)
+	hrtn=nil
+	
+	re = Regexp.union([
+				  'fortinet',		#'cpe:/h:fortinet:fortigate_100d',
+				  'apple'	#'cpe:/o:apple:iphone_os:6.1.4'
+				 ])
+	macfin = mac[9..-1]	# last three bytes of mac (in string)
+	ha = Host.where("substr(mac, 10) = ?", macfin)
+	if(!ha.nil?)
+	  ha.each do |h|
+		hrtn = h if(re.match(h.os_cpe).nil? == false)
+	  end
+	end
+	
+	if(!hrtn.nil?)
+	  hrtn.mac = mac
+	  new_issue('change', 'mac changed')
+	end
+
+	hrtn
+  end
+  
+  def find_old_host(mac)
+	oldh = Host.where(mac: mac)
+	if(!oldh || oldh.length==0)
+	  if((oldh=existing_ios_mac(mac)).nil?)
+		oldh = Host.new(:mac => mac)
+		new_issue('new', 'new asset')
+	  end
+	else
+	  oldh = oldh[0]
+	end
+
+	oldh
+  end
+  
   def parse_results(xml_file)
 	xml = XmlSimple.xml_in(File.read(xml_file))
 	
@@ -85,14 +132,9 @@ class ScanParse
 	  end
 	  
 	  # Check for updates
-	  oldh = Host.where(mac: host.mac)
-	  if(!oldh || oldh.length==0)
-		oldh = Host.new
-		new_issue('new', 'new asset')
-	  else
-		oldh = oldh[0]
-		host = oldh
-	  end
+	  host.ip = aip; # temp in case it needs to set a new issue
+	  oldh = find_old_host(host.mac)
+	  host = oldh
 	  
 	  host.vendor = assign(oldh.vendor, avendor, :vendor, !oldh.new_record?)
 	  host.ip = aip if(!aip.blank?)	# assign regardless but don't track as a change
@@ -146,21 +188,23 @@ class ScanParse
 			
 			# Check for updates
 			oldp = Port.where(host_id: port.host_id, port: port.port, proto: port.proto)
-			if(!oldp || oldp.length==0)
+			if(host.new_record? && (!oldp || oldp.length==0))
 			  oldp = Port.new
 			  new_issue('new', 'new port on asset')
+			  do_issue = true
 			else
 			  oldp = oldp[0]
 			  port = oldp
+			  do_issue = false
 			end
 			
-			port.proto = assign(oldp.proto, port.proto, :proto, !oldp.new_record?)
-			port.port = assign(oldp.port, port.port, :port, !oldp.new_record?)
+			port.proto = assign(oldp.proto, port.proto, :proto, do_issue)
+			port.port = assign(oldp.port, port.port, :port, do_issue)
 			
 			s = p['service'][0]
-			port.name = assign(oldp.name, s['name'], :portname, !oldp.new_record?)
-			port.version = assign(oldp.version, s['version'], :version, !oldp.new_record?)
-			port.cpe = assign(oldp.cpe, s['cpe'][0], :cpe, !oldp.new_record?) if(s['cpe'])
+			port.name = assign(oldp.name, s['name'], :portname, do_issue)
+			port.version = assign(oldp.version, s['version'], :version, do_issue)
+			port.cpe = assign(oldp.cpe, s['cpe'][0], :cpe, do_issue) if(s['cpe'])
 			
 			begin
 			  port.save
@@ -215,7 +259,7 @@ while(i<ARGV.length)
 end
 
 if(opts[:xml_file])
-  parser = ScanParse.new(ARGV[0])
+  parser = ScanParse.new(opts[:xml_file])
 else
   if(Process.euid != 0)
 	STDERR.puts('ERROR: must be root to properly scan')
